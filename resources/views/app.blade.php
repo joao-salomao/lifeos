@@ -46,7 +46,5 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
-
-        @vite('resources/js/pwa.ts')
     </body>
 </html>
