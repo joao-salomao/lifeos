@@ -30,6 +30,7 @@ export default defineConfig({
             base: '/',
             scope: '/',
             registerType: 'autoUpdate',
+            buildBase: '/build/',
             manifest: {
                 name: 'LifeOS',
                 short_name: 'LifeOS',
