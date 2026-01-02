@@ -10,7 +10,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/js/app.ts', 'resources/js/pwa.ts'],
+            input: ['resources/js/app.ts'],
             ssr: 'resources/js/ssr.ts',
             refresh: true,
         }),
