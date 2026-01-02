@@ -10,7 +10,7 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/js/app.ts'],
+            input: ['resources/js/app.ts', 'resources/js/pwa.ts'],
             ssr: 'resources/js/ssr.ts',
             refresh: true,
         }),
@@ -27,28 +27,45 @@ export default defineConfig({
             },
         }),
         VitePWA({
+            base: '/',
+            scope: '/',
             registerType: 'autoUpdate',
-            devOptions: {
-                enabled: isDevelopment
-            },
-            includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
             manifest: {
                 name: 'LifeOS',
                 short_name: 'LifeOS',
                 description: 'A personal life operating system',
                 theme_color: '#ffffff',
+                background_color: '#ffffff',
+                display: 'standalone',
+                scope: '/',
+                start_url: '/',
                 icons: [
                     {
-                        src: 'pwa-192x192.png',
-                        sizes: '192x192',
-                        type: 'image/png'
+                        "src": "pwa-64x64.png",
+                        "sizes": "64x64",
+                        "type": "image/png"
                     },
                     {
-                        src: 'pwa-512x512.png',
-                        sizes: '512x512',
-                        type: 'image/png'
+                        "src": "pwa-192x192.png",
+                        "sizes": "192x192",
+                        "type": "image/png"
+                    },
+                    {
+                        "src": "pwa-512x512.png",
+                        "sizes": "512x512",
+                        "type": "image/png"
+                    },
+                    {
+                        "src": "maskable-icon-512x512.png",
+                        "sizes": "512x512",
+                        "type": "image/png",
+                        "purpose": "maskable"
                     }
                 ]
+            },
+            devOptions: {
+                enabled: isDevelopment,
+                type: 'module'
             }
         })
     ],
