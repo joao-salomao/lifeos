@@ -3,14 +3,12 @@
 .gitignore
 .gitattributes
 
-# Dependencies
+# Dependencies (will be installed in Docker)
 /node_modules
 /vendor
 
-# Build artifacts
-/public/build
+# Build artifacts (will be built in Docker)
 /public/hot
-/public/storage
 
 # Environment files
 .env
@@ -36,7 +34,6 @@ Thumbs.db
 
 # Development tools
 /storage/*.key
-/storage/logs
 /bootstrap/cache/*
 !/bootstrap/cache/.gitignore
 !/storage/logs/.gitignore
@@ -45,10 +42,14 @@ Thumbs.db
 *.md
 !README.md
 
-# Docker
+# Docker (don't copy these into the image)
 docker-compose.yml
-Dockerfile
+docker-compose.*.yml
 .dockerignore
+
+# Logs
+storage/logs/*
+!storage/logs/.gitignore
 
 # Laravel specific
 /database/*.sqlite

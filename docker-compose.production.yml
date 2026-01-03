@@ -1,0 +1,132 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lifeos-app
+    ports:
+      - "8000:8080"
+      - "8443:8443"
+    volumes:
+      # Mount storage for persistent data
+      - storage-data:/var/www/html/storage/app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Application
+      APP_NAME: "LifeOS"
+      APP_ENV: "production"
+      APP_KEY: "base64:HdpgPLVdFMG6R+ZF/UTtjjiDQQgUK3DZekwTDl9ikes="
+      APP_DEBUG: "false"
+      APP_URL: "https://test2.jsapps.com.br"
+      APP_FALLBACK_LOCALE: "en"
+      APP_FAKER_LOCALE: "en_US"
+      APP_MAINTENANCE_DRIVER: "file"
+
+      # Bcrypt
+      BCRYPT_ROUNDS: "12"
+
+      # Logging
+      LOG_CHANNEL: "stack"
+      LOG_STACK: "single"
+      LOG_DEPRECATIONS_CHANNEL: "null"
+      LOG_LEVEL: "info"
+
+      # Database - PostgreSQL
+      DB_CONNECTION: "pgsql"
+      DB_HOST: "db"
+      DB_PORT: "5432"
+      DB_DATABASE: "lifeos"
+      DB_USERNAME: "lifeos"
+      DB_PASSWORD: "lifeos_password"
+
+      # Session
+      SESSION_DRIVER: "database"
+      SESSION_LIFETIME: "120"
+      SESSION_ENCRYPT: "false"
+      SESSION_PATH: "/"
+      SESSION_DOMAIN: "null"
+
+      # Broadcasting & Filesystem
+      BROADCAST_CONNECTION: "log"
+      FILESYSTEM_DISK: "local"
+      QUEUE_CONNECTION: "database"
+
+      # Cache
+      CACHE_STORE: "database"
+
+      # Mail
+      MAIL_MAILER: "log"
+      MAIL_SCHEME: "null"
+      MAIL_HOST: "127.0.0.1"
+      MAIL_PORT: "2525"
+      MAIL_USERNAME: "null"
+      MAIL_PASSWORD: "null"
+      MAIL_FROM_ADDRESS: "hello@lifeos.local"
+      MAIL_FROM_NAME: "LifeOS"
+
+      # Vite
+      VITE_APP_NAME: "LifeOS"
+
+      # ServerSideUp specific - SSL/TLS Configuration
+      SSL_MODE: "off"
+
+      # PHP Configuration
+      PHP_OPCACHE_ENABLE: "1"
+      PHP_POST_MAX_SIZE: "100M"
+      PHP_UPLOAD_MAX_FILE_SIZE: "100M"
+      PHP_MAX_EXECUTION_TIME: "120"
+      PHP_MEMORY_LIMIT: "256M"
+
+      # PHP-FPM Configuration
+      PHP_FPM_POOL_NAME: "lifeos"
+      PHP_FPM_PM_MAX_CHILDREN: "20"
+      PHP_FPM_PM_START_SERVERS: "2"
+      PHP_FPM_PM_MIN_SPARE_SERVERS: "1"
+      PHP_FPM_PM_MAX_SPARE_SERVERS: "3"
+
+    networks:
+      - lifeos-network
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/up"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+
+  db:
+    image: postgres:18
+    container_name: lifeos-db
+    environment:
+      POSTGRES_DB: "lifeos"
+      POSTGRES_USER: "lifeos"
+      POSTGRES_PASSWORD: "lifeos_password"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - lifeos-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lifeos -d lifeos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  storage-data:
+    driver: local
+  postgres-data:
+    driver: local
+
+networks:
+  lifeos-network:
+    driver: bridge
+
