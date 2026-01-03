@@ -162,6 +162,20 @@
                                 </p>
                             </div>
 
+                            <!-- Photos Gallery -->
+<div
+                                v-if="checkIn.media.length > 0"
+                                class="grid grid-cols-2 gap-2"
+                            >
+                                <img
+                                    v-for="photo in checkIn.media"
+                                    :key="photo.id"
+                                    :src="showPhoto.url({ checkIn: checkIn.id, mediaId: photo.id })"
+                                    :alt="`Check-in photo ${photo.name}`"
+                                    class="h-48 w-full cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-80"
+                                />
+                            </div>
+
                             <div
                                 v-if="checkIn.activities.length > 0"
                                 class="space-y-2"
@@ -210,6 +224,7 @@
 
 <script setup lang="ts">
 import { ActivityTypeEmoji, ActivityTypeLabel } from '@/lib/fit-tracker';
+import { showPhoto } from '@/routes/check-ins';
 import type { CheckIn } from '@/types';
 import { router } from '@inertiajs/vue3';
 import Button from 'primevue/button';

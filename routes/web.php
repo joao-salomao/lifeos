@@ -19,6 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('fit-tracker', [CheckInController::class, 'index'])->name('fit-tracker.index');
     Route::get('fit-tracker/check-in', [CheckInController::class, 'create'])->name('check-ins.create');
     Route::post('fit-tracker/check-ins', [CheckInController::class, 'store'])->name('check-ins.store');
+    Route::get('fit-tracker/check-ins/{checkIn}/photos/{mediaId}', [CheckInController::class, 'showPhoto'])->name('check-ins.showPhoto');
 });
 
 require __DIR__.'/settings.php';

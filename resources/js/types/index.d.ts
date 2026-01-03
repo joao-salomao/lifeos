@@ -1,7 +1,7 @@
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
 
-export { Activity, ActivityType, CheckIn } from '@/lib/fit-tracker';
+export { Activity, ActivityType, CheckIn, Media } from '@/lib/fit-tracker';
 
 export interface Auth {
     user: User;

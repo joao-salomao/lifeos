@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCheckInRequest;
-use App\Models\CheckIn;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,7 +14,10 @@ class CheckInController extends Controller
     {
         $checkIns = auth()->user()
             ->checkIns()
-            ->with('activities')
+            ->with([
+                'activities',
+                'media' => fn($q) => $q->where('collection_name', 'photos'),
+            ])
             ->orderBy('checked_in_at', 'desc')
             ->get();
 
@@ -49,6 +52,20 @@ class CheckInController extends Controller
             }
         }
 
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $photo) {
+                $checkIn->addMedia($photo)->toMediaCollection('photos');
+            }
+        }
+
         return redirect()->route('fit-tracker.index')->with('success', 'Check-in created successfully.');
+    }
+
+    public function showPhoto(Request $request, int $checkInId, int $mediaId)
+    {
+        $checkIn = auth()->user()->checkIns()->findOrFail($checkInId);
+        $mediaItem = $checkIn->getMedia('photos')->where('id', $mediaId)->firstOrFail();
+
+        return $mediaItem->toInlineResponse($request);
     }
 }

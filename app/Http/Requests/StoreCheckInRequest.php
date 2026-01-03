@@ -34,6 +34,8 @@ class StoreCheckInRequest extends FormRequest
             'activities.*.distance' => 'nullable|numeric|min:0',
             'activities.*.calories_burned' => 'nullable|numeric|min:0',
             'activities.*.steps' => 'nullable|integer|min:0',
+            'photos' => 'nullable|array|max:5',
+            'photos.*' => 'required|file|image|mimes:jpeg,jpg,png,webp|max:10240',
         ];
     }
 
@@ -43,7 +45,10 @@ class StoreCheckInRequest extends FormRequest
             'checked_in_at.required' => 'A data do check-in é obrigatória.',
             'activities.*.started_at.required' => 'A hora de início da atividade é obrigatória.',
             'activities.*.ended_at.after' => 'A hora de término deve ser posterior à hora de início.',
+            'photos.max' => 'Você pode adicionar no máximo 5 fotos.',
+            'photos.*.image' => 'O arquivo deve ser uma imagem.',
+            'photos.*.mimes' => 'As fotos devem ser do tipo: jpeg, jpg, png ou webp.',
+            'photos.*.max' => 'Cada foto não pode ser maior que 10MB.',
         ];
     }
 }
-

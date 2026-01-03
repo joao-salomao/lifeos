@@ -13,6 +13,47 @@
         </div>
 
         <Card class="mb-4">
+            <template #title>Fotos</template>
+            <template #content>
+                <div v-if="photos.length > 0" class="mb-4 grid grid-cols-2 gap-2">
+                    <div
+                        v-for="(photo, index) in photos"
+                        :key="photo.filepath"
+                        class="relative aspect-square"
+                    >
+                        <img
+                            :src="photo.webviewPath"
+                            :alt="`Foto ${index + 1}`"
+                            class="h-full w-full rounded-lg object-cover"
+                        />
+                        <Button
+                            icon="pi pi-times"
+                            rounded
+                            text
+                            severity="danger"
+                            class="absolute right-1 top-1 bg-white/80"
+                            @click="removePhoto(photo)"
+                        />
+                    </div>
+                </div>
+                <Button
+                    label="Adicionar Foto"
+                    icon="pi pi-camera"
+                    outlined
+                    @click="addPhoto"
+                    class="w-full"
+                    :disabled="photos.length >= 5"
+                />
+                <small v-if="photos.length >= 5" class="mt-2 block text-center text-gray-500">
+                    Máximo de 5 fotos atingido
+                </small>
+                <small v-if="form.errors.photos" class="mt-2 block p-error">
+                    {{ form.errors.photos }}
+                </small>
+            </template>
+        </Card>
+
+        <Card class="mb-4">
             <template #content>
                 <div class="space-y-4">
                     <div>
@@ -88,6 +129,7 @@
                 />
             </template>
         </Card>
+
 
         <!-- Activity Drawer -->
         <Drawer
@@ -228,7 +270,8 @@ import InputNumber from 'primevue/inputnumber';
 import InputText from 'primevue/inputtext';
 import Select from 'primevue/select';
 import Textarea from 'primevue/textarea';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
+import { useCamera } from '@/composables/useCamera';
 
 interface ActivityForm {
     type: ActivityType;
@@ -239,11 +282,14 @@ interface ActivityForm {
     steps: number | null;
 }
 
+const { takePhoto, removePhoto, photos } = useCamera();
+
 const form = useForm({
     checked_in_at: new Date(),
     title: '',
     description: '',
     activities: [] as ActivityForm[],
+    photos: [] as File[],
 });
 
 const activityDrawerVisible = ref(false);
@@ -275,8 +321,16 @@ const isDurationInvalid = computed(() => {
     return durationMinutes === 0;
 });
 
+onMounted(addPhoto);
+
 function goBack() {
     router.visit('/fit-tracker');
+}
+
+function addPhoto() {
+    if (photos.value.length < 5) {
+        takePhoto();
+    }
 }
 
 function addActivity() {
@@ -373,10 +427,21 @@ function publishCheckIn() {
         };
     });
 
+    // Prepare photos as File objects for upload
+    const photoFiles = photos.value
+        .filter((photo) => photo.blob)
+        .map((photo) => {
+            // Create a File from the Blob with proper filename
+            return new File([photo.blob!], photo.filepath, {
+                type: photo.blob!.type,
+            });
+        });
+
     form.transform((data) => ({
         ...data,
         checked_in_at: new Date(data.checked_in_at).toISOString(),
         activities: activitiesData,
+        photos: photoFiles,
     })).post('/fit-tracker/check-ins', {
         onSuccess: () => {
             router.visit('/fit-tracker');

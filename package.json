@@ -33,7 +33,9 @@
         "vue-tsc": "^2.2.4"
     },
     "dependencies": {
+        "@capacitor/camera": "^8.0.0",
         "@inertiajs/vue3": "^2.1.0",
+        "@ionic/pwa-elements": "^3.3.0",
         "@primeuix/themes": "^2.0.2",
         "@vueuse/core": "^12.8.2",
         "class-variance-authority": "^0.7.1",
